@@ -11,6 +11,8 @@ import (
 	"github.com/alexbrainman/odbc/api"
 )
 
+var _ driver.RowsColumnTypeDatabaseTypeName = (*Rows)(nil)
+
 type Rows struct {
 	os *ODBCStmt
 }
@@ -63,4 +65,73 @@ func (r *Rows) NextResultSet() error {
 		return err
 	}
 	return nil
+}
+
+func (r *Rows) ColumnTypeDatabaseTypeName(i int) string {
+	var base *BaseColumn
+	switch col := r.os.Cols[i].(type) {
+	case *BindableColumn:
+		base = col.BaseColumn
+	case *NonBindableColumn:
+		base = col.BaseColumn
+	default:
+		panic("unknown column")
+	}
+
+	switch base.SQLType {
+	case api.SQL_CHAR:
+		return "CHAR"
+	case api.SQL_NUMERIC:
+		return "NUMERIC"
+	case api.SQL_DECIMAL:
+		return "DECIMAL"
+	case api.SQL_INTEGER:
+		return "INTEGER"
+	case api.SQL_SMALLINT:
+		return "SMALLINT"
+	case api.SQL_FLOAT:
+		return "FLOAT"
+	case api.SQL_REAL:
+		return "REAL"
+	case api.SQL_DOUBLE:
+		return "DOUBLE"
+	case api.SQL_DATETIME:
+		return "DATETIME"
+	case api.SQL_TIME:
+		return "TIME"
+	case api.SQL_VARCHAR:
+		return "VARCHAR"
+	case api.SQL_TYPE_DATE:
+		return "DATE"
+	case api.SQL_TYPE_TIME:
+		return "TIME"
+	case api.SQL_TYPE_TIMESTAMP:
+		return "TIMESTAMP"
+	case api.SQL_TIMESTAMP:
+		return "TIMESTAMP"
+	case api.SQL_LONGVARCHAR:
+		return "LONGVARCHAR"
+	case api.SQL_BINARY:
+		return "BINARY"
+	case api.SQL_VARBINARY:
+		return "VARBINARY"
+	case api.SQL_LONGVARBINARY:
+		return "LONGVARBINARY"
+	case api.SQL_BIGINT:
+		return "BIGINT"
+	case api.SQL_TINYINT:
+		return "TINYINT"
+	case api.SQL_BIT:
+		return "BIT"
+	case api.SQL_WCHAR:
+		return "WCHAR"
+	case api.SQL_WVARCHAR:
+		return "WVARCHAR"
+	case api.SQL_WLONGVARCHAR:
+		return "WLONGVARCHAR"
+	case api.SQL_GUID:
+		return "GUID"
+	default:
+		panic("unknown column type")
+	}
 }
