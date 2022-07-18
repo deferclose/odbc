@@ -8,7 +8,7 @@ import (
 	"database/sql/driver"
 	"io"
 
-	"github.com/alexbrainman/odbc/api"
+	"github.com/deferclose/odbc/api"
 )
 
 var _ driver.RowsColumnTypeDatabaseTypeName = (*Rows)(nil)
